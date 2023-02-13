@@ -26,6 +26,14 @@ class SignUpView(APIView):
         )
 
 
+class SignOutView(APIView):
+    def post(self, request: Request):
+        return Response(
+            data={},
+            status=HTTP_200_OK
+        )
+
+
 class VerifyEmailView(APIView):
     def get(self, request: Request):
         return Response(

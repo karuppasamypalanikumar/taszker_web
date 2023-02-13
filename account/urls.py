@@ -13,6 +13,11 @@ urlpatterns = [
         name="signin"
     ),
     path(
+        route="signout/",
+        view=views.SignOutView.as_view(),
+        name="signout"
+    ),
+    path(
         route="verify_email/",
         view=views.VerifyEmailView.as_view(),
         name="verify_email"
