@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from . import controller
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_404_NOT_FOUND,
@@ -10,18 +12,26 @@ from rest_framework.status import (
 
 
 # Create your views here.
-class SignInView(APIView):
+class SignUpView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request: Request):
+        signup_controller = controller.SignUpController(
+            request=request
+        )
         return Response(
-            data={},
+            data=signup_controller.display_details(),
             status=HTTP_200_OK
         )
 
 
-class SignUpView(APIView):
+class SignInView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request: Request):
+        signin_controller = controller.SignInController(
+            request = request
+        )
         return Response(
-            data={},
+            data=signin_controller.display_values(),
             status=HTTP_200_OK
         )
 
