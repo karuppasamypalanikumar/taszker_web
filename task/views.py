@@ -1,9 +1,11 @@
-from rest_framework.views import APIView
+from rest_framework.views import (APIView)
+from rest_framework.generics import ListAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from .models import Task
+from .serializers import TaskSerializer
 from . import controllers
-from .paginations import StandardPagination
 from rest_framework.status import (
     HTTP_200_OK,
     HTTP_404_NOT_FOUND,
@@ -36,12 +38,9 @@ class AssignView(APIView):
     )
 
 
-class ViewAllView(APIView):
+class ViewAllView(ListAPIView):
   permission_classes = [AllowAny]
-  pagination_class = StandardPagination
-  def get(self, request: Request):
-    controller = controllers.ViewAllController()
-    return Response(
-        data=controller.display_result(),
-        status=HTTP_200_OK
-    )
+  def get_queryset(self):
+    return Task.objects.all()
+  def get_serializer_class(self):
+    return TaskSerializer
