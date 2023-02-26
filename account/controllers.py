@@ -1,5 +1,6 @@
 from rest_framework.request import Request
 from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 from rest_framework.serializers import ValidationError
 from . import serializers
 from . import validaters
@@ -81,3 +82,11 @@ class SignInController():
         data = self.request.data
         self.username = data.get('username')
         self.password = data.get('password')
+        
+
+class SignOutController():
+    def __init__(self,request:Request) -> None:
+        self.request = request
+    
+    def __logout_user__(self):
+        pass

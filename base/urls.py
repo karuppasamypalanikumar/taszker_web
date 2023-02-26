@@ -25,5 +25,10 @@ urlpatterns = [
         route='api/account/',
         view=include('account.urls'),
         name="account"
+    ),
+    path(
+        route='api/task/',
+        view=include('task.urls'),
+        name="account"
     )
 ]
