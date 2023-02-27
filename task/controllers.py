@@ -1,4 +1,8 @@
-from .models import Task
+from .models import (
+  Task,
+  Project,
+  Status
+  )
 from .serializers import TaskSerializer
 from django.contrib.auth.models import User
 from django.db import connections
@@ -14,8 +18,23 @@ class AvailableUserViewController():
     ).order_by('id')
     return users
 
+class ViewAllProjectViewController():
+  def __init__(self,user: User) -> None:
+    self.user = user
+  
+  def display_result(self):
+    projects = Project.objects.all().order_by('id')
+    return projects
 
-class ViewAllController():
+class ViewAllStatusViewController():
+  def __init__(self,user: User) -> None:
+    self.user = user
+  
+  def display_result(self):
+    status = Status.objects.all().order_by('id')
+    return status
+
+class ViewAllTaskController():
   def __init__(self,user: User) -> None:
     self.user = user
   
