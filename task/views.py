@@ -39,8 +39,12 @@ class AssignView(APIView):
 
 
 class ViewAllView(ListAPIView):
-  permission_classes = [AllowAny]
   def get_queryset(self):
-    return Task.objects.all()
+    user = self.request.user
+    controller = controllers.ViewAllController(
+        user=user
+    )
+    return controller.display_result()
+
   def get_serializer_class(self):
     return TaskSerializer

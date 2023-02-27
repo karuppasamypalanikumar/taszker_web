@@ -16,8 +16,9 @@ class TaskSerializer(serializers.ModelSerializer):
   title = serializers.CharField()
   description = serializers.CharField()
   author = UserSerializer()
-
+  created_date = serializers.DateTimeField()
+  
   class Meta:
     model = Task
-    fields = ['title','description','author']
+    fields = ['title','description','author','created_date']
     
