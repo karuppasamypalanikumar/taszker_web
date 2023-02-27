@@ -18,8 +18,13 @@ urlpatterns = [
         name='assign'
     ),
     path(
-        route='view_all/',
+        route='view_all_tasks/',
         view=views.ViewAllView.as_view(),
-        name='view_all'
+        name='view_all_tasks'
+    ),
+    path(
+        route='view_all_users/',
+        view=views.AvailableUserView.as_view(),
+        name='view_all_users'
     )
 ]

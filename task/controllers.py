@@ -4,6 +4,17 @@ from django.contrib.auth.models import User
 from django.db import connections
 from django.db.models import Q
 
+class AvailableUserViewController():
+  def __init__(self,user: User) -> None:
+    self.user = user
+    
+  def display_result(self):
+    users = User.objects.filter(
+      is_superuser=False
+    ).order_by('id')
+    return users
+
+
 class ViewAllController():
   def __init__(self,user: User) -> None:
     self.user = user
