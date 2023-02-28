@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from .models import Task
 from . import controllers
 from .serializers import (
@@ -20,8 +21,11 @@ from rest_framework.status import (
 
 class CreateTaskView(APIView):
     def post(self, request: Request):
+        controller = controllers.CreateTaskViewController(
+            request=request
+        )
         return Response(
-            data={},
+            data=controller.display_message(),
             status=HTTP_200_OK
         )
 
@@ -92,16 +96,23 @@ class AvailableUserView(ListAPIView):
 
 class CreateProjectView(APIView):
     def post(self, request: Request):
+        controller = controllers.CreateProjectViewController(
+            request=request
+        )
         return Response(
-            data={},
+            data=controller.display(),
             status=HTTP_200_OK
         )
 
 
 class DeleteProjectView(APIView):
+    permission_classes = [AllowAny]
     def delete(self, request: Request):
+        controller = controllers.DeleteProjectViewController(
+            request=request
+        )
         return Response(
-            data={},
+            data=controller.display(),
             status=HTTP_200_OK
         )
 
@@ -116,15 +127,21 @@ class UpdateProjectView(APIView):
 
 class CreateStatusView(APIView):
     def post(self, request: Request):
+        controller = controllers.CreateStatusViewController(
+            request=request
+        )
         return Response(
-            data={},
+            data=controller.display(),
             status=HTTP_200_OK
         )
 
 
 class DeleteStatusView(APIView):
     def delete(self, request: Request):
+        controller = controllers.DeleteStatusViewController(
+            request=request
+        )
         return Response(
-            data={},
+            data=controller.display(),
             status=HTTP_200_OK
         )

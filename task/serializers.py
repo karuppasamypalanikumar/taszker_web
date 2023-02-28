@@ -35,7 +35,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Project
-    fields = ['title', 'description']
+    fields = ['id','title', 'description']
 
 
 class StatusSerializer(serializers.ModelSerializer):
@@ -43,4 +43,4 @@ class StatusSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Status
-    fields = ['title']
+    fields = ['id','title']

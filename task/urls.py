@@ -36,5 +36,30 @@ urlpatterns = [
         route='view_all_projects/',
         view=views.ViewAllProjectView.as_view(),
         name='view_all_projects'
+    ),
+    path(
+        route='create_project/',
+        view=views.CreateProjectView.as_view(),
+        name='create_project'
+    ),
+    path(
+        route='update_project/',
+        view=views.UpdateProjectView.as_view(),
+        name='update_project'
+    ),
+    path(
+        route='delete_project/',
+        view=views.DeleteProjectView.as_view(),
+        name='delete_project'
+    ),
+    path(
+        route='create_status/',
+        view=views.CreateStatusView.as_view(),
+        name='create_status'
+    ),
+    path(
+        route='delete_status/',
+        view=views.DeleteStatusView.as_view(),
+        name='delete_status'
     )
 ]
