@@ -26,7 +26,6 @@ class TaskSerializer(serializers.ModelSerializer):
   assignees = UserSerializer(many=True)
   assigner = UserSerializer()
   created_date = serializers.DateTimeField()
-
   class Meta:
     model = Task
     fields = ['id', 
@@ -54,9 +53,8 @@ class StatusSerializer(serializers.ModelSerializer):
     fields = ['id', 'title']
 
 class CommentSerializer(serializers.ModelSerializer):
-  title = serializers.CharField()
   description = serializers.CharField()
-  
+  created_time = serializers.DateTimeField()
   class Meta:
     model = Comment
-    fields = ['id', 'title','description']
+    fields = ['id','description','created_time']

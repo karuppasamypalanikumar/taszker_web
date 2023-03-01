@@ -1,13 +1,15 @@
 from .models import (
     Task,
     Project,
-    Status
+    Status,
+    Comment
 )
 from rest_framework.request import Request
 from .serializers import (
     TaskSerializer,
     ProjectSerializer,
-    StatusSerializer
+    StatusSerializer,
+    CommentSerializer
 )
 from rest_framework.serializers import ValidationError
 from rest_framework.status import (
@@ -72,7 +74,7 @@ class CreateTaskViewController():
 
   def __create_task__(self):
     self.task = Task(
-      title=self.task_title
+        title=self.task_title
     )
     self.__save_task__()
 
@@ -143,10 +145,10 @@ class CreateTaskViewController():
       self.task.save()
     except:
       raise ValidationError(
-        detail={
-          'status_code':0,
-          'status_message': 'Missing Required Parameters'
-        }
+          detail={
+              'status_code': 0,
+              'status_message': 'Missing Required Parameters'
+          }
       )
 
   def display(self):
@@ -634,4 +636,139 @@ class UpdateProjectViewController():
     return {
         'status_code': 1,
         'status_message': 'Project Updated Successfully'
+    }
+
+
+class AddCommentViewController():
+  def __init__(self, request: Request) -> None:
+    self.request = request
+    self.__parse__()
+
+  def __parse__(self):
+    data = self.request.data
+    self.decription = data.get('decription')
+    self.task_id = data.get('task_id')
+    self.__validate__()
+
+  def __validate__(self):
+    validators.FormatValidator.int_validate(
+        input=self.task_id,
+        msg="Task ID Can't be Empty or Wrong Data Type"
+    )
+    validators.FormatValidator.string_validate(
+        input=self.decription,
+        msg="Comment Decription Can't be Empty or Wrong Data Type"
+    )
+    self.__save__()
+
+  def __save__(self):
+    self.comment = Comment(
+        decription=self.decription,
+        created_time=timezone.now()
+    )
+    self.comment.save()
+    try:
+      self.task = Task.objects.get(pk=self.task_id)
+      self.task.comments.add(self.comment)
+      self.task.save()
+    except:
+      raise ValidationError(
+          detail={
+              'status_code': 0,
+              'status_message': "Invalid Task ID or Something Went Wrong"
+          },
+          code=HTTP_400_BAD_REQUEST
+      )
+
+  def display(self):
+    serializer = CommentSerializer(
+        instance=self.comment
+    )
+    return {
+        'status_code': 1,
+        'status_message': 'Comment Added Successfully',
+        'data': serializer.data
+    }
+
+
+class UpdateCommentViewController():
+  def __init__(self, request: Request) -> None:
+    self.request = request
+    self.__parse__()
+
+  def __parse__(self):
+    data = self.request.data
+    self.comment_id = data.get('comment_id')
+    self.decription = data.get('decription')
+    self.__validate__()
+
+  def __validate__(self):
+    validators.FormatValidator.int_validate(
+        input=self.comment_id,
+        msg="Comment ID Can't be Empty or Wrong Data Type"
+    )
+    validators.FormatValidator.string_validate(
+        input=self.decription,
+        msg="Title Can't be Empty or Wrong Data Type"
+    )
+    self.__save__()
+
+  def __save__(self):
+    try:
+      self.comment = Comment.objects.get(pk=self.comment_id)
+      self.comment.save()
+    except:
+      raise ValidationError(
+          detail={
+              'status_code': 0,
+              'status_message': 'Invalid Comment ID'
+          },
+          code=HTTP_400_BAD_REQUEST
+      )
+
+  def display(self):
+    serializer = CommentSerializer(
+        instance=self.comment
+    )
+    return {
+        'status_code': 1,
+        'status_message': 'Comment Updated Successfully',
+        'data': serializer.data
+    }
+
+
+class DeleteCommentViewController():
+  def __init__(self, request: Request) -> None:
+    self.request = request
+    self.__parse__()
+
+  def __parse__(self):
+    data = self.request.data
+    self.comment_id = data.get('comment_id')
+    self.__validate__()
+
+  def __validate__(self):
+    validators.FormatValidator.int_validate(
+        input=self.comment_id,
+        msg="Comment ID Can't be Empty or Wrong Data Type"
+    )
+    self.__delete_detail__()
+
+  def __delete_detail__(self):
+    try:
+      self.comment = Comment.objects.get(pk=self.comment_id)
+      self.comment.delete()
+    except:
+      raise ValidationError(
+          detail={
+              'status_code': 0,
+              'status_message': 'Invalid Comment ID'
+          },
+          code=HTTP_400_BAD_REQUEST
+      )
+
+  def display(self):
+    return {
+        'status_code': 1,
+        'status_message': 'Comment Deleted Successfully',
     }

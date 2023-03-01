@@ -11,9 +11,7 @@ from .serializers import (
     StatusSerializer,
     ProjectSerializer
 )
-from rest_framework.status import (
-    HTTP_200_OK
-)
+from rest_framework.status import HTTP_200_OK
 
 
 class CreateTaskView(APIView):
@@ -146,6 +144,39 @@ class CreateStatusView(APIView):
 class DeleteStatusView(APIView):
     def delete(self, request: Request):
         controller = controllers.DeleteStatusViewController(
+            request=request
+        )
+        return Response(
+            data=controller.display(),
+            status=HTTP_200_OK
+        )
+
+
+class AddCommentView(APIView):
+    def post(self, request: Request):
+        controller = controllers.AddCommentViewController(
+            request=request
+        )
+        return Response(
+            data=controller.display(),
+            status=HTTP_200_OK
+        )
+
+
+class DeleteCommentView(APIView):
+    def delete(self, request: Request):
+        controller = controllers.DeleteCommentViewController(
+            request=request
+        )
+        return Response(
+            data=controller.display(),
+            status=HTTP_200_OK
+        )
+
+
+class UpdateCommentView(APIView):
+    def post(self, request: Request):
+        controller = controllers.UpdateCommentViewController(
             request=request
         )
         return Response(
