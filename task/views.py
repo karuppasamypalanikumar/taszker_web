@@ -12,10 +12,7 @@ from .serializers import (
     ProjectSerializer
 )
 from rest_framework.status import (
-    HTTP_200_OK,
-    HTTP_404_NOT_FOUND,
-    HTTP_400_BAD_REQUEST,
-    HTTP_401_UNAUTHORIZED
+    HTTP_200_OK
 )
 
 
@@ -107,6 +104,7 @@ class CreateProjectView(APIView):
 
 class DeleteProjectView(APIView):
     permission_classes = [AllowAny]
+
     def delete(self, request: Request):
         controller = controllers.DeleteProjectViewController(
             request=request
@@ -119,8 +117,11 @@ class DeleteProjectView(APIView):
 
 class UpdateProjectView(APIView):
     def post(self, request: Request):
+        controller = controllers.UpdateProjectViewController(
+            request=request
+        )
         return Response(
-            data={},
+            data=controller.display(),
             status=HTTP_200_OK
         )
 

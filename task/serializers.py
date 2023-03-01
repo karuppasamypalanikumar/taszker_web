@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
 
   class Meta:
       model = User
-      fields = ['name']
+      fields = ['id', 'name']
 
   def get_name(self, obj):
     return obj.first_name + " " + obj.last_name
@@ -35,7 +35,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Project
-    fields = ['id','title', 'description']
+    fields = ['id', 'title', 'description']
 
 
 class StatusSerializer(serializers.ModelSerializer):
@@ -43,4 +43,4 @@ class StatusSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Status
-    fields = ['id','title']
+    fields = ['id', 'title']

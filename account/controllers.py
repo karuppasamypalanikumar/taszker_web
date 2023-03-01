@@ -54,11 +54,11 @@ class SignUpController():
 
 
 class SignInController():
-    def __init__(self,request:Request) -> None:
+    def __init__(self, request: Request) -> None:
         self.request = request
         self.__parse__()
         self.__validate_details__()
-        
+
     def __validate_details__(self):
         validaters.UsernameValidator(
             username=self.username,
@@ -69,7 +69,7 @@ class SignInController():
             password=self.password,
             check_pass=True
         )
-    
+
     def display_values(self):
         username = self.request.data.get("username")
         user = User.objects.get(username=username)
@@ -77,16 +77,16 @@ class SignInController():
             instance=user
         )
         return ser.data
-    
+
     def __parse__(self):
         data = self.request.data
         self.username = data.get('username')
         self.password = data.get('password')
-        
+
 
 class SignOutController():
-    def __init__(self,request:Request) -> None:
+    def __init__(self, request: Request) -> None:
         self.request = request
-    
+
     def __logout_user__(self):
         pass

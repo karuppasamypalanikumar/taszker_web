@@ -11,7 +11,7 @@ class UserSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "email","token"]
+        fields = ["id", "username", "email", "token"]
 
     def get_token(self, obj):
         token = Token.objects.get_or_create(obj)

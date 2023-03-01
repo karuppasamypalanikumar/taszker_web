@@ -4,12 +4,13 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST
 )
 
+
 class Common():
     def __init__(self) -> None:
         print("")
-    
+
     @staticmethod
-    def is_none(value,msg):
+    def is_none(value, msg):
         if value is None:
             raise ValidationError(
                 detail={
@@ -18,8 +19,9 @@ class Common():
                 },
                 code=HTTP_400_BAD_REQUEST
             )
+
     @staticmethod
-    def is_length_statisfied(value,required_length,msg):
+    def is_length_statisfied(value, required_length, msg):
         actual_length = len(value)
         if actual_length < required_length:
             raise ValidationError(
@@ -29,7 +31,8 @@ class Common():
                 },
                 code=HTTP_400_BAD_REQUEST
             )
-            
+
+
 class UsernameValidator():
     def __init__(self, username, is_need=False) -> None:
         self.username = username
@@ -40,7 +43,7 @@ class UsernameValidator():
         Common.is_none(
             value=self.username,
             msg="Username can't be empty"
-            )
+        )
         Common.is_length_statisfied(
             value=self.username,
             required_length=6,
@@ -69,7 +72,7 @@ class PasswordValidator():
         Common.is_none(
             value=self.password,
             msg="Password can't be empty"
-            )
+        )
         Common.is_length_statisfied(
             value=self.password,
             required_length=6,

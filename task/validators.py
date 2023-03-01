@@ -11,31 +11,31 @@ class FormatValidator():
     print('StringValidator')
 
   @classmethod
-  def int_validate(cls,input: int):
+  def int_validate(cls,input: int,msg:str):
     validaters.Common.is_none(
         value=input,
-        msg="Input Can't be Empty"
+        msg=msg
     )
     if not isinstance(input, int):
       raise ValidationError(
           detail={
               "status_code": 0,
-              "status_message": "Type mismatch need int"
+              "status_message": msg
           },
           code=HTTP_400_BAD_REQUEST
       )
 
   @classmethod
-  def string_validate(cls, input: str):
+  def string_validate(cls, input: str, msg: str):
     validaters.Common.is_none(
         value=input,
-        msg="Input Can't be Empty"
+        msg=msg
     )
     if not isinstance(input, str):
       raise ValidationError(
           detail={
               "status_code": 0,
-              "status_message": "Type mismatch need string"
+              "status_message": msg
           },
           code=HTTP_400_BAD_REQUEST
       )

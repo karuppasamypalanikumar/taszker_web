@@ -60,10 +60,12 @@ class CreateProjectViewController():
 
   def __validate__(self):
     validators.FormatValidator.string_validate(
-        input=self.title
+        input=self.title,
+        msg="Title Can't be Empty or Wrong Data Type"
     )
     validators.FormatValidator.string_validate(
-        input=self.description
+        input=self.description,
+        msg="Description Can't be Empty or Wrong Data Type"
     )
     self.__save__()
 
@@ -97,7 +99,8 @@ class CreateStatusViewController():
 
   def __validate__(self):
     validators.FormatValidator.string_validate(
-        input=self.title
+        input=self.title,
+        msg="Title Can't be Empty or Wrong Data Type"
     )
     self.__save__()
 
@@ -131,7 +134,8 @@ class DeleteStatusViewController():
 
   def __validate__(self):
     validators.FormatValidator.int_validate(
-        input=self.status_id
+        input=self.status_id,
+        msg="Status ID Can't be Empty or Wrong Data Type"
     )
     self.__fetch_data__()
 
@@ -159,6 +163,7 @@ class DeleteStatusViewController():
         'status_message': 'Status Deleted Successfully'
     }
 
+
 class DeleteProjectViewController():
   def __init__(self, request: Request) -> None:
     self.request = request
@@ -171,7 +176,8 @@ class DeleteProjectViewController():
 
   def __validate__(self):
     validators.FormatValidator.int_validate(
-        input=self.project_id
+        input=self.project_id,
+        msg="Project ID Can't be Empty or Wrong Data Type"
     )
     self.__fetch_data__()
 
@@ -198,6 +204,7 @@ class DeleteProjectViewController():
         'status_code': 1,
         'status_message': 'Project Deleted Successfully'
     }
+
 
 class AvailableUserViewController():
   def __init__(self, user: User) -> None:
@@ -239,3 +246,70 @@ class ViewAllTaskController():
         Q(assigner=self.user)
     ).distinct().order_by('created_date')
     return tasks
+
+
+class UpdateProjectViewController():
+  def __init__(self, request: Request) -> None:
+    self.request = request
+    self.__parse__()
+
+  def __parse__(self):
+    data = self.request.data
+    self.project_id = data.get('project_id')
+    self.project_title = data.get('project_title')
+    self.project_description = data.get('project_description')
+    self.__validate__()
+
+  def __validate__(self):
+    validators.FormatValidator.int_validate(
+        input=self.project_id,
+        msg="Project ID Can't be Empty or Wrong Data Type"
+    )
+    update_need = False
+    if self.project_title:
+      update_need = True
+      validators.FormatValidator.string_validate(
+          input=self.project_title,
+          msg="Title Can't be Empty or Wrong Data Type"
+      )
+    if self.project_description:
+      update_need = True
+      validators.FormatValidator.string_validate(
+          input=self.project_title,
+          msg="Description Can't be Empty or Wrong Data Type"
+      )
+    if update_need:
+      self.__fetch_data__()
+    else:
+      raise ValidationError(
+          detail={
+              'status_code': 0,
+              'status_message': 'No Valid Detail To Update'
+          },
+          code=HTTP_400_BAD_REQUEST
+      )
+
+  def __fetch_data__(self):
+    try:
+      self.project = Project.objects.get(
+          pk=self.project_id
+      )
+      self.__update_data__()
+    except:
+      raise ValidationError(
+          detail={
+              "status_code": 0,
+              "status_message": "Invalid project id"
+          },
+          code=HTTP_400_BAD_REQUEST
+      )
+
+  def __update_data__(self):
+    self.project.title = self.project_title
+    self.project.save()
+
+  def display(self):
+    return {
+        'status_code': 1,
+        'status_message': 'Project Updated Successfully'
+    }
