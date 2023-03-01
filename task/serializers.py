@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from .models import (
     Task,
     Project,
-    Status
+    Status,
+    Comment
 )
 
 
@@ -22,17 +23,24 @@ class TaskSerializer(serializers.ModelSerializer):
   title = serializers.CharField()
   description = serializers.CharField()
   author = UserSerializer()
+  assignees = UserSerializer(many=True)
+  assigner = UserSerializer()
   created_date = serializers.DateTimeField()
 
   class Meta:
     model = Task
-    fields = ['title', 'description', 'author', 'created_date']
+    fields = ['id', 
+              'title', 
+              'description', 
+              'assignees' , 
+              'author', 
+              'created_date',
+              'assigner']
 
 
 class ProjectSerializer(serializers.ModelSerializer):
   title = serializers.CharField()
   description = serializers.CharField()
-
   class Meta:
     model = Project
     fields = ['id', 'title', 'description']
@@ -44,3 +52,11 @@ class StatusSerializer(serializers.ModelSerializer):
   class Meta:
     model = Status
     fields = ['id', 'title']
+
+class CommentSerializer(serializers.ModelSerializer):
+  title = serializers.CharField()
+  description = serializers.CharField()
+  
+  class Meta:
+    model = Comment
+    fields = ['id', 'title','description']

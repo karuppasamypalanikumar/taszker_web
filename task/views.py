@@ -22,23 +22,29 @@ class CreateTaskView(APIView):
             request=request
         )
         return Response(
-            data=controller.display_message(),
+            data=controller.display(),
             status=HTTP_200_OK
         )
 
 
 class DeleteTaskView(APIView):
     def delete(self, request: Request):
+        controller = controllers.DeleteTaskViewController(
+            request=request
+        )
         return Response(
-            data={},
+            data=controller.display(),
             status=HTTP_200_OK
         )
 
 
 class UpdateTaskView(APIView):
     def post(self, request: Request):
+        controller = controllers.UpdateTaskViewController(
+            request=request
+        )
         return Response(
-            data={},
+            data=controller.display(),
             status=HTTP_200_OK
         )
 

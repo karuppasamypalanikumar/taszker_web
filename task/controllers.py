@@ -15,7 +15,6 @@ from rest_framework.status import (
 )
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.db import connections
 from django.db.models import Q
 from . import validators
 
@@ -23,26 +22,307 @@ from . import validators
 class CreateTaskViewController():
   def __init__(self, request: Request) -> None:
     self.request = request
-    self.__verify_result__()
+    self.__parse__()
 
-  def __verify_result__(self):
-    # Title
-    self.title = self.request.data.get('title')
-    self.__save_details__()
+  def __parse__(self):
+    data = self.request.data
+    self.task_title = data.get('task_title')
+    self.task_description = data.get('task_description')
+    self.status_id = data.get('status_id')
+    self.project_id = data.get('project_id')
+    self.author = self.request.user
+    self.assignees_ids = data.get('assignees_ids')
+    self.assigner_id = data.get('assigner_id')
+    self.updated_time = timezone.now()
+    self.created_time = timezone.now()
+    self.last_visited_time = timezone.now()
+    self.__validate__()
 
-  def __save_details__(self):
-    self.task = Task(
-
+  def __validate__(self):
+    validators.FormatValidator.string_validate(
+        input=self.task_title,
+        msg="Task Title Can't be Empty or Wrong Data Type"
     )
-    self.task.save()
+    if self.task_description:
+      validators.FormatValidator.string_validate(
+          input=self.task_title,
+          msg="Task Description Can't be Empty or Wrong Data Type"
+      )
+    if self.status_id:
+      validators.FormatValidator.int_validate(
+          input=self.status_id,
+          msg="Status id Can't be Empty or Wrong Data Type"
+      )
+    if self.project_id:
+      validators.FormatValidator.int_validate(
+          input=self.project_id,
+          msg="Project id Can't be Empty or Wrong Data Type"
+      )
+    if self.assignees_ids:
+      validators.FormatValidator.list_validate(
+          input=self.assignees_ids,
+          msg="Assignees Can't be Empty or Wrong Data Type"
+      )
+    if self.assigner_id:
+      validators.FormatValidator.int_validate(
+          input=self.assigner_id,
+          msg="Assigner Can't be Empty or Wrong Data Type"
+      )
+    self.__create_task__()
 
-  def display_message(self):
+  def __create_task__(self):
+    self.task = Task(
+      title=self.task_title
+    )
+    self.__save_task__()
+
+  def __save_task__(self):
+    if self.task_title:
+      self.task.title = self.task_title
+
+    if self.task_description:
+      self.task.description = self.task_description
+    if self.author:
+      self.task.author = self.author
+    if self.status_id:
+      try:
+        self.status = Status.objects.get(pk=self.status_id)
+        self.task.status = self.status
+      except:
+        raise ValidationError(
+            detail={
+                'status_code': 0,
+                'status_message': 'invalid status id'
+            },
+            code=HTTP_400_BAD_REQUEST
+        )
+    if self.project_id:
+      try:
+        self.project = Project.objects.get(pk=self.project_id)
+        self.task.project = self.project
+      except:
+        raise ValidationError(
+            detail={
+                'status_code': 0,
+                'status_message': 'invalid project id'
+            },
+            code=HTTP_400_BAD_REQUEST
+        )
+    if self.assignees_ids:
+      try:
+        self.assignees = User.objects.filter(
+            pk__in=self.assignees_ids).exclude().order_by('id')[:10]
+        self.task.assignees = self.assignees
+      except:
+        raise ValidationError(
+            detail={
+                'status_code': 0,
+                'status_message': 'invalid assignees ids'
+            },
+            code=HTTP_400_BAD_REQUEST
+        )
+    if self.assigner_id:
+      try:
+        self.assigner = User.objects.get(pk=self.assigner_id)
+        self.task.assigner = self.assigner
+      except:
+        raise ValidationError(
+            detail={
+                'status_code': 0,
+                'status_message': 'invalid assigner id'
+            },
+            code=HTTP_400_BAD_REQUEST
+        )
+    if self.updated_time:
+      self.task.updated_date = self.updated_time
+    if self.created_time:
+      self.task.created_date = self.created_time
+    if self.last_visited_time:
+      self.task.last_visited_date = self.last_visited_time
+    try:
+      self.task.save()
+    except:
+      raise ValidationError(
+        detail={
+          'status_code':0,
+          'status_message': 'Missing Required Parameters'
+        }
+      )
+
+  def display(self):
     serializer = TaskSerializer(
         instance=self.task
     )
     return {
         'status_code': 1,
-        'status_message': 'Task Created Sucessfully',
+        'status_message': 'Task Updated Successfully',
+        'data': serializer.data
+    }
+
+
+class UpdateTaskViewController():
+  def __init__(self, request: Request) -> None:
+    self.request = request
+    self.__parse__()
+
+  def __parse__(self):
+    data = self.request.data
+    self.task_id = data.get('task_id')
+    self.task_title = data.get('task_title')
+    self.task_description = data.get('task_description')
+    self.status_id = data.get('status_id')
+    self.project_id = data.get('project_id')
+    self.author = self.request.user
+    self.assignees_ids = data.get('assignees_ids')
+    self.assigner_id = data.get('assigner_id')
+    self.updated_time = timezone.now()
+    self.__validate__()
+
+  def __validate__(self):
+    validators.FormatValidator.int_validate(
+        input=self.task_id,
+        msg="Task ID Can't be Empty or Wrong Data Type"
+    )
+    update_need = False
+    if self.task_title:
+      update_need = True
+      validators.FormatValidator.string_validate(
+          input=self.task_title,
+          msg="Task Title Can't be Empty or Wrong Data Type"
+      )
+    if self.task_description:
+      update_need = True
+      validators.FormatValidator.string_validate(
+          input=self.task_title,
+          msg="Task Description Can't be Empty or Wrong Data Type"
+      )
+    if self.status_id:
+      update_need = True
+      validators.FormatValidator.int_validate(
+          input=self.status_id,
+          msg="Status id Can't be Empty or Wrong Data Type"
+      )
+    if self.project_id:
+      update_need = True
+      validators.FormatValidator.int_validate(
+          input=self.project_id,
+          msg="Project id Can't be Empty or Wrong Data Type"
+      )
+    if self.assignees_ids:
+      update_need = True
+      validators.FormatValidator.list_validate(
+          input=self.assignees_ids,
+          msg="Assignees Can't be Empty or Wrong Data Type"
+      )
+    if self.assigner_id:
+      update_need = True
+      validators.FormatValidator.int_validate(
+          input=self.assigner_id,
+          msg="Assigner Can't be Empty or Wrong Data Type"
+      )
+    if update_need:
+      self.__fetch_data__()
+    else:
+      raise ValidationError(
+          detail={
+              'status_code': 0,
+              'status_message': 'No Valid Detail To Update'
+          },
+          code=HTTP_400_BAD_REQUEST
+      )
+
+  def __fetch_data__(self):
+    try:
+      self.task = Task.objects.get(
+          pk=self.task_id
+      )
+      self.__update_data__()
+    except:
+      raise ValidationError(
+          detail={
+              "status_code": 0,
+              "status_message": "Invalid task id"
+          },
+          code=HTTP_400_BAD_REQUEST
+      )
+
+  def __update_data__(self):
+    save_need = False
+    if self.task_title:
+      self.task.title = self.task_title
+      save_need = True
+
+    if self.task_description:
+      self.task.description = self.task_description
+      save_need = True
+
+    if self.status_id:
+      try:
+        self.status = Status.objects.get(pk=self.status_id)
+        self.task.status = self.status
+        save_need = True
+      except:
+        raise ValidationError(
+            detail={
+                'status_code': 0,
+                'status_message': 'invalid status id'
+            },
+            code=HTTP_400_BAD_REQUEST
+        )
+    if self.project_id:
+      try:
+        self.project = Project.objects.get(pk=self.project_id)
+        self.task.project = self.project
+        save_need = True
+      except:
+        raise ValidationError(
+            detail={
+                'status_code': 0,
+                'status_message': 'invalid project id'
+            },
+            code=HTTP_400_BAD_REQUEST
+        )
+    if self.assignees_ids:
+      try:
+        self.assignees = User.objects.filter(
+            pk__in=self.assignees_ids).exclude().order_by('id')[:10]
+        self.task.assignees = self.assignees
+        save_need = True
+      except:
+        raise ValidationError(
+            detail={
+                'status_code': 0,
+                'status_message': 'invalid assignees ids'
+            },
+            code=HTTP_400_BAD_REQUEST
+        )
+    if self.assigner_id:
+      try:
+        self.assigner = User.objects.get(pk=self.assigner_id)
+        self.task.assigner = self.assigner
+        save_need = True
+      except:
+        raise ValidationError(
+            detail={
+                'status_code': 0,
+                'status_message': 'invalid assigner id'
+            },
+            code=HTTP_400_BAD_REQUEST
+        )
+    if self.updated_time:
+      self.task.updated_date = self.updated_time
+      save_need = True
+
+    if save_need:
+      self.task.save()
+
+  def display(self):
+    serializer = TaskSerializer(
+        instance=self.task
+    )
+    return {
+        'status_code': 1,
+        'status_message': 'Task Updated Successfully',
         'data': serializer.data
     }
 
@@ -84,6 +364,48 @@ class CreateProjectViewController():
         'status_code': 1,
         'status_message': 'Project Created Successfully',
         'data': serializer.data
+    }
+
+
+class DeleteTaskViewController():
+  def __init__(self, request: Request) -> None:
+    self.request = request
+    self.__parse__()
+
+  def __parse__(self):
+    data = self.request.data
+    self.task_id = data.get('task_id')
+    self.__validate__()
+
+  def __validate__(self):
+    validators.FormatValidator.int_validate(
+        input=self.task_id,
+        msg="Status ID Can't be Empty or Wrong Data Type"
+    )
+    self.__fetch_data__()
+
+  def __fetch_data__(self):
+    try:
+      self.task = Task.objects.get(
+          pk=self.task_id
+      )
+      self.__delete_data__()
+    except:
+      raise ValidationError(
+          detail={
+              "status_code": 0,
+              "status_message": "Invalid task id"
+          },
+          code=HTTP_400_BAD_REQUEST
+      )
+
+  def __delete_data__(self):
+    self.task.delete()
+
+  def display(self):
+    return {
+        'status_code': 1,
+        'status_message': 'Task Deleted Successfully'
     }
 
 
