@@ -24,6 +24,11 @@ urlpatterns = [
         view=admin.site.urls
     ),
     path(
+        route='',
+        view=include('website.urls'),
+        name="website"
+    ),
+    path(
         route='api/account/',
         view=include('account.urls'),
         name="account"
