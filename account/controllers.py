@@ -57,7 +57,6 @@ class SignInController():
     def __init__(self, request: Request) -> None:
         self.request = request
         self.__parse__()
-        self.__validate_details__()
 
     def __validate_details__(self):
         validaters.UsernameValidator(
@@ -74,7 +73,8 @@ class SignInController():
         username = self.request.data.get("username")
         user = User.objects.get(username=username)
         ser = serializers.UserSerializer(
-            instance=user
+            instance=user,
+            many=False
         )
         return ser.data
 
@@ -82,6 +82,7 @@ class SignInController():
         data = self.request.data
         self.username = data.get('username')
         self.password = data.get('password')
+        self.__validate_details__()
 
 
 class SignOutController():

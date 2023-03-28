@@ -17,8 +17,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from . import views
 
 urlpatterns = [
+    path(
+        route="api/health_check/",
+        view=views.check_health,
+        name="check_health",
+    ),
     path(
         route='admin/',
         view=admin.site.urls

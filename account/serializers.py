@@ -14,5 +14,11 @@ class UserSerializer(ModelSerializer):
         fields = ["id", "username", "email", "token"]
 
     def get_token(self, obj):
-        token = Token.objects.get_or_create(obj)
-        return str(token[0])
+        try:
+            token = Token.objects.get(
+                user=obj
+            )
+            return str(token)
+        except:
+            token =  Token.objects.create(user=obj)
+            return str(token)
