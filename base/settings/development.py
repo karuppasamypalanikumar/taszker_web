@@ -15,7 +15,7 @@ DATABASES = {
         'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'HOST': env('DB_HOST'),   # Or an IP Address that your DB is hosted on
         'PORT': '5432',
     }
 }
